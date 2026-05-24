@@ -37,9 +37,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/cosminmemetea/webcam2rtsp"
-Repository = "https://github.com/cosminmemetea/webcam2rtsp"
-Issues = "https://github.com/cosminmemetea/webcam2rtsp/issues"
+Homepage = "https://github.com/CosminBMemetea/webcam2rtsp"
+Repository = "https://github.com/CosminBMemetea/webcam2rtsp"
+Issues = "https://github.com/CosminBMemetea/webcam2rtsp/issues"
 
 [project.scripts]
 webcam2rtsp = "webcam2rtsp.__main__:main"

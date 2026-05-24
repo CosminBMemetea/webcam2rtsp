@@ -98,7 +98,7 @@ Then add the printed lines to your shell profile, such as `~/.zshrc` on macOS.
 For local development from this repository:
 
 ```bash
-git clone https://github.com/cosminmemetea/webcam2rtsp.git
+git clone https://github.com/CosminBMemetea/webcam2rtsp.git
 cd webcam2rtsp
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
