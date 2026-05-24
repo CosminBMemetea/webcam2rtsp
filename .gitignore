@@ -9,6 +9,8 @@ build/
 .Python
 .env
 .venv
+.venv/
+.venv-*/
 venv/
 ENV/
 env.bak/

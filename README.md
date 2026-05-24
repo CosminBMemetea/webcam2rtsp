@@ -29,10 +29,13 @@ brew install gstreamer gst-plugins-base gst-plugins-good gst-libav gst-plugins-b
 If Python cannot find the GStreamer libraries, export these variables:
 
 ```bash
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH
-export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib
-export GI_TYPELIB_PATH=/opt/homebrew/lib/girepository-1.0
+webcam2rtsp --print-env
 ```
+
+The command detects `/opt/homebrew` on Apple Silicon Macs and `/usr/local` on
+Intel Macs. It prints values like `PATH`, `DYLD_LIBRARY_PATH`,
+`GI_TYPELIB_PATH`, `GST_PLUGIN_PATH`, and `GST_PLUGIN_SYSTEM_PATH_1_0` only when
+those paths exist.
 
 ### Linux
 
@@ -76,6 +79,22 @@ After installing GStreamer for your operating system:
 python -m pip install webcam2rtsp
 ```
 
+Verify the native GStreamer setup:
+
+```bash
+webcam2rtsp-doctor
+```
+
+On macOS and Windows, `webcam2rtsp` automatically detects common GStreamer
+install paths before importing PyGObject. If your shell still needs the same
+values permanently, print them with:
+
+```bash
+webcam2rtsp --print-env
+```
+
+Then add the printed lines to your shell profile, such as `~/.zshrc` on macOS.
+
 For local development from this repository:
 
 ```bash
@@ -86,6 +105,13 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 python -m pip install -e .
+```
+
+Local development can run the same checks with:
+
+```bash
+python -m webcam2rtsp --doctor
+python -m webcam2rtsp --print-env
 ```
 
 ## Run

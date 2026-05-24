@@ -1,4 +1,7 @@
 import argparse
+import sys
+
+from .gstreamer_env import configure_gstreamer_environment, doctor_main, shell_exports
 
 
 def positive_int(value):
@@ -51,11 +54,31 @@ def build_parser():
         default=500,
         help="H.264 bitrate in kbit/s.",
     )
+    parser.add_argument(
+        "--doctor",
+        action="store_true",
+        help="Check GStreamer, PyGObject, and native library setup without starting a stream.",
+    )
+    parser.add_argument(
+        "--print-env",
+        action="store_true",
+        help="Print detected shell exports for GStreamer and exit.",
+    )
     return parser
 
 
 def main():
     args = build_parser().parse_args()
+
+    if args.print_env:
+        for line in shell_exports():
+            print(line)
+        return
+
+    if args.doctor:
+        sys.exit(doctor_main())
+
+    configure_gstreamer_environment()
 
     from .streamer import WebcamRTSPServer
 
@@ -71,6 +94,10 @@ def main():
         bitrate=args.bitrate,
     )
     server.run()
+
+
+def doctor():
+    sys.exit(doctor_main())
 
 
 if __name__ == "__main__":

@@ -43,6 +43,7 @@ Issues = "https://github.com/cosminmemetea/webcam2rtsp/issues"
 
 [project.scripts]
 webcam2rtsp = "webcam2rtsp.__main__:main"
+webcam2rtsp-doctor = "webcam2rtsp.__main__:doctor"
 
 [project.optional-dependencies]
 publish = [

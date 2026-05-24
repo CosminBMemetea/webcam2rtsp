@@ -4,6 +4,10 @@ __all__ = ["WebcamRTSPServer"]
 
 def __getattr__(name):
     if name == "WebcamRTSPServer":
+        from .gstreamer_env import configure_gstreamer_environment
+
+        configure_gstreamer_environment()
+
         from .streamer import WebcamRTSPServer
 
         return WebcamRTSPServer
