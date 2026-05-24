@@ -54,6 +54,10 @@ def _mac_homebrew_prefix():
 
 
 def _windows_gstreamer_root():
+    msystem_prefix = os.environ.get("MSYSTEM_PREFIX")
+    if msystem_prefix and Path(msystem_prefix).exists():
+        return Path(msystem_prefix)
+
     env_names = (
         "GSTREAMER_1_0_ROOT_MSVC_X86_64",
         "GSTREAMER_1_0_ROOT_MINGW_X86_64",
@@ -65,6 +69,8 @@ def _windows_gstreamer_root():
             return Path(value)
 
     candidates = (
+        Path("C:/msys64/ucrt64"),
+        Path("C:/msys64/mingw64"),
         Path("C:/gstreamer/1.0/msvc_x86_64"),
         Path("C:/gstreamer/1.0/mingw_x86_64"),
     )
@@ -191,10 +197,13 @@ def doctor_checks():
         )
     elif os_name == "windows":
         root = _windows_gstreamer_root() or Path("C:/gstreamer/1.0/msvc_x86_64")
+        gstreamer_dll = root / "bin" / "gstreamer-1.0-0.dll"
+        if not gstreamer_dll.exists():
+            gstreamer_dll = root / "bin" / "libgstreamer-1.0-0.dll"
         checks.extend(
             [
                 _file_check("GStreamer bin", root / "bin"),
-                _file_check("gstreamer dll", root / "bin" / "gstreamer-1.0-0.dll"),
+                _file_check("gstreamer dll", gstreamer_dll),
                 _file_check("Gst typelib", root / "lib" / "girepository-1.0" / "Gst-1.0.typelib"),
                 _file_check(
                     "GstRtspServer typelib",
@@ -229,13 +238,28 @@ def install_hint():
             "python -m pip install --upgrade PyGObject"
         )
     if os_name == "windows":
-        return "Install GStreamer MSVC runtime and development packages from https://gstreamer.freedesktop.org/download/"
+        return (
+            "Do not install PyGObject with pip on Windows.\n"
+            "Recommended: install MSYS2, open the UCRT64 shell, then run:\n"
+            "pacman -S --needed mingw-w64-ucrt-x86_64-python "
+            "mingw-w64-ucrt-x86_64-python-gobject "
+            "mingw-w64-ucrt-x86_64-gstreamer "
+            "mingw-w64-ucrt-x86_64-gst-plugins-base "
+            "mingw-w64-ucrt-x86_64-gst-plugins-good "
+            "mingw-w64-ucrt-x86_64-gst-plugins-bad "
+            "mingw-w64-ucrt-x86_64-gst-plugins-ugly "
+            "mingw-w64-ucrt-x86_64-gst-libav "
+            "mingw-w64-ucrt-x86_64-gst-rtsp-server\n"
+            "python -m pip install webcam2rtsp"
+        )
     return (
         "Debian/Ubuntu: sudo apt install python3-gi python3-gst-1.0 "
         "gir1.2-gst-rtsp-server-1.0 gstreamer1.0-tools "
         "gstreamer1.0-plugins-base gstreamer1.0-plugins-good "
         "gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly\n"
-        "Virtualenv users may also need: python -m pip install --upgrade PyGObject"
+        "If you use a virtualenv with apt/dnf PyGObject, create it with: "
+        "python3 -m venv --system-site-packages .venv\n"
+        "Alternative when build tools are available: python -m pip install 'webcam2rtsp[pygobject]'"
     )
 
 

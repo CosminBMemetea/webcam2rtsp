@@ -58,17 +58,31 @@ sudo dnf install -y python3-gobject gstreamer1 gstreamer1-plugins-base \
 
 ### Windows
 
-Install the GStreamer MSVC runtime and development packages from:
+`PyGObject` usually does not install from normal PyPI on Windows. If you see
+`No module named gi` or `Could not find a version that satisfies the requirement
+PyGObject`, do not keep retrying `pip install PyGObject`.
+
+Recommended Windows setup:
+
+1. Install MSYS2 from:
 
 ```text
-https://gstreamer.freedesktop.org/download/
+https://www.msys2.org/
 ```
 
-During install, include the base, good, bad, ugly, libav, and RTSP server
-components. Add GStreamer's `bin` directory to `PATH`, for example:
+2. Open the **MSYS2 UCRT64** shell.
+
+3. Install Python, PyGObject, GStreamer, plugins, and RTSP server bindings:
 
 ```powershell
-$env:PATH += ";C:\gstreamer\1.0\msvc_x86_64\bin"
+pacman -S --needed mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-gobject mingw-w64-ucrt-x86_64-gstreamer mingw-w64-ucrt-x86_64-gst-plugins-base mingw-w64-ucrt-x86_64-gst-plugins-good mingw-w64-ucrt-x86_64-gst-plugins-bad mingw-w64-ucrt-x86_64-gst-plugins-ugly mingw-w64-ucrt-x86_64-gst-libav mingw-w64-ucrt-x86_64-gst-rtsp-server
+```
+
+4. Install `webcam2rtsp` using the MSYS2 Python:
+
+```powershell
+python -m pip install webcam2rtsp
+webcam2rtsp-doctor
 ```
 
 ## Install webcam2rtsp
@@ -76,6 +90,22 @@ $env:PATH += ";C:\gstreamer\1.0\msvc_x86_64\bin"
 After installing GStreamer for your operating system:
 
 ```bash
+python -m pip install webcam2rtsp
+```
+
+If you want pip to also try installing the Python PyGObject binding on macOS or
+Linux, use the optional extra:
+
+```bash
+python -m pip install "webcam2rtsp[pygobject]"
+```
+
+For Debian/Ubuntu virtual environments that use `python3-gi` from apt, create
+the environment with system packages visible:
+
+```bash
+python3 -m venv --system-site-packages .venv
+source .venv/bin/activate
 python -m pip install webcam2rtsp
 ```
 
@@ -106,6 +136,16 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 python -m pip install -e .
 ```
+
+On Debian/Ubuntu, prefer this venv command when using `python3-gi` from apt:
+
+```bash
+python3 -m venv --system-site-packages venv
+```
+
+`requirements.txt` is intentionally empty for runtime dependencies. The `gi`
+module comes from native PyGObject packages installed through Homebrew, apt,
+dnf, pacman, or another operating-system package manager.
 
 Local development can run the same checks with:
 

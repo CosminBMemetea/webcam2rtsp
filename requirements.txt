@@ -1,1 +1,9 @@
-PyGObject>=3.42
+# Runtime Python dependencies are intentionally empty.
+#
+# PyGObject is a native GObject/GStreamer binding. On Windows it is not
+# reliably installable from PyPI with pip, so webcam2rtsp checks for it at
+# runtime with:
+#
+#   webcam2rtsp-doctor
+#
+# Install PyGObject through your operating system package manager instead.

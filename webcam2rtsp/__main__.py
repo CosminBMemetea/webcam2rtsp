@@ -80,7 +80,16 @@ def main():
 
     configure_gstreamer_environment()
 
-    from .streamer import WebcamRTSPServer
+    try:
+        from .streamer import WebcamRTSPServer
+    except ModuleNotFoundError as exc:
+        if exc.name != "gi":
+            raise
+        print("Missing Python module: gi")
+        print("PyGObject is a native dependency and is not installed for this Python.")
+        print("Run: webcam2rtsp-doctor")
+        print("Then follow the suggested install steps for your platform.")
+        sys.exit(1)
 
     server = WebcamRTSPServer(
         address=args.address,
