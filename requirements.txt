@@ -1,1 +1,1 @@
-pygobject
+PyGObject>=3.42

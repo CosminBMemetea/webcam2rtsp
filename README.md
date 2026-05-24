@@ -1,33 +1,32 @@
-# 📡 webcam2rtsp
+# webcam2rtsp
 
-[![macOS Only](https://img.shields.io/badge/macOS-supported-brightgreen?logo=apple)](#)
-[![MIT License](https://img.shields.io/github/license/cosminmemetea/webcam2rtsp)](https://github.com/cosminmemetea/webcam2rtsp/blob/main/LICENSE)
+`webcam2rtsp` streams a local laptop or USB webcam over RTSP using Python and
+GStreamer. It supports Linux, macOS, and Windows when the matching GStreamer
+camera source plugin is installed.
 
-**webcam2rtsp** is a Python package for macOS that streams your webcam over RTSP using H.264 encoding and GStreamer.
+Default stream URL:
 
-🖥️ URL: `rtsp://localhost:8851/webcam1`
+```text
+rtsp://<computer-ip>:8854/webcam1
+```
 
----
+## Features
 
-## ✅ Features
+- RTSP server with configurable bind address, port, and mount path
+- Platform defaults for Linux, macOS, and Windows webcams
+- Configurable camera device, resolution, framerate, and H.264 bitrate
+- Custom GStreamer source support for unusual camera drivers
+- Compatible with VLC, FFplay, and other RTSP clients
 
-- RTSP server accessible on `localhost:8851`
-- Streams using system webcam with H.264 encoding
-- Easy to install and run in a virtual environment
-- Compatible with GStreamer-enabled players (VLC, FFplay, etc.)
+## Install GStreamer
 
----
-
-## 🚀 Getting Started (macOS only)
-
-### 1. Install GStreamer (macOS)
+### macOS
 
 ```bash
 brew install gstreamer gst-plugins-base gst-plugins-good gst-libav gst-plugins-bad gst-plugins-ugly pygobject3
 ```
 
-### 2. Add Environment Variables Temporarily
-In your terminal (in the project folder):
+If Python cannot find the GStreamer libraries, export these variables:
 
 ```bash
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH
@@ -35,65 +34,154 @@ export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib
 export GI_TYPELIB_PATH=/opt/homebrew/lib/girepository-1.0
 ```
 
+### Linux
 
-
-### 3. (Optional) Add Environment Variables Permanently
-Edit your ~/.zshrc (or ~/.bash_profile):
+Debian/Ubuntu:
 
 ```bash
-nano ~/.zshrc
+sudo apt update
+sudo apt install -y python3-gi python3-gst-1.0 gir1.2-gst-rtsp-server-1.0 \
+  gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+  gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
 ```
-And copy in the end of the .zshrc and .bash_profile at the end.
+
+Fedora:
+
 ```bash
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH
-export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib
-export GI_TYPELIB_PATH=/opt/homebrew/lib/girepository-1.0
+sudo dnf install -y python3-gobject gstreamer1 gstreamer1-plugins-base \
+  gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-plugins-ugly \
+  gstreamer1-rtsp-server
 ```
 
-Good luck saving the file using using nano editor!
+### Windows
 
+Install the GStreamer MSVC runtime and development packages from:
 
-### 4. Clone and run
+```text
+https://gstreamer.freedesktop.org/download/
+```
+
+During install, include the base, good, bad, ugly, libav, and RTSP server
+components. Add GStreamer's `bin` directory to `PATH`, for example:
+
+```powershell
+$env:PATH += ";C:\gstreamer\1.0\msvc_x86_64\bin"
+```
+
+## Install webcam2rtsp
+
+After installing GStreamer for your operating system:
+
+```bash
+python -m pip install webcam2rtsp
+```
+
+For local development from this repository:
 
 ```bash
 git clone https://github.com/cosminmemetea/webcam2rtsp.git
 cd webcam2rtsp
-python3 -m venv venv
-source venv/bin/activate
-pip install -upgrade pip
-pip install -r requirements.txt
-pip install -e .
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -e .
+```
+
+## Run
+
+Use the default webcam:
+
+```bash
 python -m webcam2rtsp
 ```
 
-You can now open the stream at:
+Open the stream from another machine on the same network:
 
-```bash
-rtsp://localhost:8851/webcam1
+```text
+rtsp://<computer-ip>:8854/webcam1
 ```
 
-With:
-
-VLC → Open Network Stream
-
-FFplay → ffplay rtsp://localhost:8851/webcam1
-
-### 5. (Optional) Create a macOS .command launcher
-
-Let’s automate this. Create a file named run_webcam2rtsp.command in your project folder:
-
+Local test with FFplay:
 
 ```bash
-touch run_webcam2rtsp.command
-chmod +x run_webcam2rtsp.command
+ffplay rtsp://127.0.0.1:8854/webcam1
 ```
+
+## Configuration
+
+```bash
+python -m webcam2rtsp \
+  --address 0.0.0.0 \
+  --port 8554 \
+  --mount-point /camera \
+  --device /dev/video2 \
+  --width 1280 \
+  --height 720 \
+  --framerate 30 \
+  --bitrate 2500
+```
+
+Device examples:
+
+```bash
+# Linux
+python -m webcam2rtsp --device /dev/video0
+
+# macOS
+python -m webcam2rtsp --device 0
+
+# Windows
+python -m webcam2rtsp --device 0
+```
+
+Use a custom GStreamer source when the default source is not right for your
+camera:
+
+```bash
+python -m webcam2rtsp --source "autovideosrc"
+python -m webcam2rtsp --source "dshowvideosrc device-name=\"Integrated Camera\""
+```
+
+Available options:
+
+```bash
+python -m webcam2rtsp --help
+```
+
+## Publish to PyPI
+
+Build the package:
+
+```bash
+python -m pip install --upgrade build twine
+python -m build
+```
+
+Check the package metadata:
+
+```bash
+python -m twine check dist/*
+```
+
+Upload to TestPyPI first:
+
+```bash
+python -m twine upload --repository testpypi dist/*
+```
+
+Upload to PyPI when the TestPyPI package installs correctly:
+
+```bash
+python -m twine upload dist/*
+```
+
+## Platform Defaults
+
+- Linux: `v4l2src device="/dev/video0"`
+- macOS: `avfvideosrc device-index=0`
+- Windows: `mfvideosrc device-index=0`
 
 ## License
 
-MIT – Permissive open-source license allowing free use, modification, and distribution for any purpose, with minimal restrictions.
-
-## Contributing
-Contributions make this repo better! Whether fixing bugs, adding features, or improving docs, you're welcome.
-Let's have fun!
-
-
+MIT

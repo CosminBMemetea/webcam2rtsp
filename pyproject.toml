@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "webcam2rtsp"
+version = "0.1.0"
+description = "Cross-platform RTSP H.264 webcam streamer using GStreamer"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+  { name = "Memetea Cosmin" }
+]
+keywords = ["webcam", "rtsp", "gstreamer", "h264", "camera", "streaming"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Multimedia :: Video",
+  "Topic :: System :: Networking",
+]
+dependencies = [
+  "PyGObject>=3.42",
+]
+
+[project.urls]
+Homepage = "https://github.com/cosminmemetea/webcam2rtsp"
+Repository = "https://github.com/cosminmemetea/webcam2rtsp"
+Issues = "https://github.com/cosminmemetea/webcam2rtsp/issues"
+
+[project.scripts]
+webcam2rtsp = "webcam2rtsp.__main__:main"
+
+[project.optional-dependencies]
+publish = [
+  "build>=1.2",
+  "twine>=5",
+]
+
+[tool.setuptools.packages.find]
+include = ["webcam2rtsp*"]
